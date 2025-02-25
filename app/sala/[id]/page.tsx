@@ -14,7 +14,7 @@ export default function Sala() {
   const [votes, setVotes] = useState<number[]>([])
   const [userName, setUserName] = useState("")
   const [showInviteModal, setShowInviteModal] = useState(false)
-  const [roomName, setRoomName] = useState("") // Nuevo estado para el nombre de la sala
+  const [roomName, setRoomName] = useState("")
 
   useEffect(() => {
     const storedName = localStorage.getItem("userName")
@@ -27,16 +27,13 @@ export default function Sala() {
     const fetchSalaData = async () => {
       const { data, error } = await supabase
         .from("salas")
-        .select("nombre, votos") // Seleccionamos también el nombre de la sala
+        .select("nombre, votos")
         .eq("id", id)
         .single()
 
       if (error) {
         console.error("Error al obtener la sala:", error.message)
       } else {
-
-        console.log("data", data)
-
         if (data?.nombre) setRoomName(data.nombre)
         if (data?.votos) setVotes(data.votos)
       }
@@ -44,7 +41,6 @@ export default function Sala() {
 
     fetchSalaData()
 
-    // Escuchar cambios en tiempo real
     const subscription = supabase
       .channel(`sala-${id}`)
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "salas" }, (payload) => {
@@ -78,25 +74,40 @@ export default function Sala() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-3xl font-bold mb-8">Sala: {roomName || "Cargando..."}</h1>
-      <p className="text-lg mb-6">Bienvenido, <strong>{userName}</strong> 👋</p>
+    <div className="flex min-h-screen flex-col items-center justify-center p-24 text-black">
+      <h1 className="text-5xl font-bold mb-8">Sala: {roomName || "Cargando..."}</h1>
+      <p className="text-3xl mb-6">Bienvenido, <strong>{userName}</strong> 👋</p>
       <button
         onClick={() => setShowInviteModal(true)}
-        className="mb-4 bg-green-600 text-white p-2 rounded-md hover:bg-green-700"
+        className="mb-6 bg-green-600 text-white text-2xl p-4 rounded-md hover:bg-green-700"
       >
         Invitar jugadores
       </button>
+
       {!votingComplete ? (
         <VotingSystem onVoteComplete={handleVoteComplete} />
       ) : (
         <div className="flex flex-col items-center">
-          <VoteResults votes={votes} />
-          <Button className="mt-6" onClick={handleResetVoting}>
+          {/* Contenedor con scroll horizontal si hay muchos votos */}
+          <div className="w-full max-w-3xl overflow-x-auto">
+            <div className="flex gap-4 mt-6 whitespace-nowrap">
+              {votes.map((vote, index) => (
+                <div
+                  key={index}
+                  className="bg-white text-black text-4xl font-bold p-6 rounded-xl shadow-md w-28 h-28 flex items-center justify-center border border-gray-400"
+                >
+                  {vote}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Button className="mt-8 text-3xl p-4" onClick={handleResetVoting}>
             Volver a Votar
           </Button>
         </div>
       )}
+
       {showInviteModal && <InviteModal roomId={id as string} onClose={() => setShowInviteModal(false)} />}
     </div>
   )

@@ -21,7 +21,7 @@ export default function Unirse() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6">
+    <div className="flex min-h-screen flex-col items-center justify-center p-6 text-gray-800">
       <h1 className="text-3xl font-bold mb-6">Unirse a una Sala</h1>
       <input
         type="text"

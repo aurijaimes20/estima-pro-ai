@@ -33,24 +33,28 @@ export default function CrearSala() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-3xl font-bold mb-8">Crear Nueva Sala</h1>
-      <form onSubmit={crearSala} className="w-full max-w-xs">
-        <input
-          type="text"
-          value={nombreSala}
-          onChange={(e) => setNombreSala(e.target.value)}
-          placeholder="Nombre de la sala"
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4"
-          required
-        />
-        <button 
-          type="submit" 
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
-          disabled={loading}
-        >
-          {loading ? "Creando..." : "Crear Sala"}
-        </button>
-      </form>
+      <h1 className="text-4xl font-bold mb-8 text-white">Crear Nueva Sala</h1>
+  
+      {/* Caja blanca alrededor del formulario */}
+      <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-xs">
+        <form onSubmit={crearSala} className="flex flex-col">
+          <input
+            type="text"
+            value={nombreSala}
+            onChange={(e) => setNombreSala(e.target.value)}
+            placeholder="Nombre de la sala"
+            className="border rounded w-full py-3 px-4 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+          <button 
+            type="submit" 
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded mt-4"
+            disabled={loading}
+          >
+            {loading ? "Creando..." : "Crear Sala"}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

@@ -12,18 +12,16 @@ const voteOptions = [1, 2, 3, 5, 8, 13, 21, 34, 55, "☕"]
 
 export default function VoteResults({ votes }: VoteResultsProps) {
   const chartRef = useRef<HTMLCanvasElement>(null)
-  const chartInstanceRef = useRef<Chart | null>(null) // Guardamos la instancia del gráfico
+  const chartInstanceRef = useRef<Chart | null>(null)
 
   useEffect(() => {
     if (chartRef.current) {
       const ctx = chartRef.current.getContext("2d")
       if (ctx) {
-        // Destruir el gráfico anterior si existe
         if (chartInstanceRef.current) {
           chartInstanceRef.current.destroy()
         }
 
-        // Crear nuevo gráfico
         chartInstanceRef.current = new Chart(ctx, {
           type: "bar",
           data: {
@@ -32,8 +30,8 @@ export default function VoteResults({ votes }: VoteResultsProps) {
               {
                 label: "Votos",
                 data: voteOptions.map((option) => votes.filter((v) => v === option).length),
-                backgroundColor: "rgba(54, 162, 235, 0.5)",
-                borderColor: "rgba(54, 162, 235, 1)",
+                backgroundColor: "rgba(102, 51, 153, 0.5)", // Cambio a morado semi-transparente
+                borderColor: "rgba(102, 51, 153, 1)", // Borde morado
                 borderWidth: 1,
               },
             ],
@@ -50,7 +48,6 @@ export default function VoteResults({ votes }: VoteResultsProps) {
       }
     }
 
-    // Cleanup: destruir el gráfico al desmontar el componente
     return () => {
       if (chartInstanceRef.current) {
         chartInstanceRef.current.destroy()
@@ -61,7 +58,21 @@ export default function VoteResults({ votes }: VoteResultsProps) {
   return (
     <div className="w-full max-w-2xl">
       <h2 className="text-2xl font-bold mb-4">Resultados de la Votación</h2>
-      <canvas ref={chartRef}></canvas>
+
+      {/* Nueva distribución horizontal de los votos */}
+      <div className="flex flex-wrap justify-center gap-4 mt-4">
+        {voteOptions.map((option) => {
+          const count = votes.filter((v) => v === option).length
+          return (
+            <div
+              key={option}
+              className="bg-white text-black text-2xl font-bold p-4 rounded-2xl shadow-md w-16 h-16 flex items-center justify-center"
+            >
+              {option}
+            </div>
+          )
+        })}
+      </div>
 
       {/* Tabla de votos */}
       <table className="w-full mt-6 border-collapse border border-gray-300">
