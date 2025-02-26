@@ -12,7 +12,7 @@ import { CloudCog } from "lucide-react"
 export default function Sala() {
   const { id } = useParams() as { id: string }
   const [votingComplete, setVotingComplete] = useState(false)
-  const [votes, setVotes] = useState<number[]>([])
+  const [votes, setVotes] = useState<{ nombre: string; voto: number | string }[]>([])
   const [userName, setUserName] = useState("")
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [roomName, setRoomName] = useState("")
@@ -36,7 +36,7 @@ export default function Sala() {
         console.error("Error al obtener la sala:", error.message)
       } else {
         if (data?.nombre) setRoomName(data.nombre)
-        if (data?.votos) setVotes(data.votos)
+        if (data?.votos) setVotes(data.votos.map((voto: number) => ({ nombre: "", voto })))
       }
     }
 
@@ -56,8 +56,8 @@ export default function Sala() {
     }
   }, [id])
 
-  const handleVoteComplete = async (newVotes: (number | string)[]) => {
-    setVotes(newVotes.map(vote => typeof vote === "string" ? parseFloat(vote) : vote))
+  const handleVoteComplete = async (newVotes: { nombre: string; voto: number | string }[]) => {
+    setVotes(newVotes.map(vote => ({ nombre: vote.nombre, voto: typeof vote.voto === "string" ? parseFloat(vote.voto) : vote.voto })))
     setVotingComplete(true)
   }
 
@@ -84,7 +84,7 @@ export default function Sala() {
       </button>
 
       {!votingComplete ? (
-        <VotingSystem onVoteComplete={handleVoteComplete} roomId={id} votes={votes}/>
+        <VotingSystem onVoteComplete={handleVoteComplete} roomId={id} votes={votes} userName={userName} />
       ) : (
         <div className="flex flex-col items-center">
           {/* Contenedor con scroll horizontal si hay muchos votos */}
@@ -93,9 +93,10 @@ export default function Sala() {
               {votes.map((vote, index) => (
                 <div
                   key={index}
-                  className="bg-white text-black text-4xl font-bold p-6 rounded-xl shadow-md w-28 h-28 flex items-center justify-center border border-gray-400"
+                  className="bg-white text-black text-4xl font-bold p-6 rounded-xl shadow-md w-28 h-28 flex flex-col items-center justify-center border border-gray-400"
                 >
-                  {vote}
+                  <span className="text-sm text-gray-700">{vote.nombre}</span>
+                  <span>{ vote.voto }</span>
                 </div>
               ))}
             </div>
