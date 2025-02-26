@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Coffee, Eye, EyeOff } from "lucide-react" // Agregamos iconos para revelar/ocultar
+import { CloudCog, Coffee, Eye, EyeOff } from "lucide-react" // Agregamos iconos para revelar/ocultar
 import { supabase } from "@/lib/supabaseClient"
 import { Button } from "@/components/ui/button" // Usamos un botón estilizado
 
@@ -13,25 +13,31 @@ const voteOptions = [1, 2, 3, 5, 8, 13, 21, 34, 55, "☕"]
 
 interface VotingSystemProps {
   onVoteComplete: (votes: (number | string)[]) => void
+  roomId: string
+  votes: (number | string)[]
 }
 
-export default function VotingSystem({ onVoteComplete }: VotingSystemProps) {
+export default function VotingSystem({ onVoteComplete, roomId, votes }: VotingSystemProps) {
   const [selectedVote, setSelectedVote] = useState<number | string | null>(null)
-  const [votes, setVotes] = useState<(number | string)[]>([]) // Estado para los votos
+  // const [votes, setVotes] = useState<(number | string)[]>([]) // Estado para los votos
   const [showResults, setShowResults] = useState(false) // Estado para mostrar/ocultar resultados
 
   const handleVote = async (vote: number | string) => {
     setSelectedVote(vote)
 
     // Obtener votos actuales
-    const { data } = await supabase.from("salas").select("id, votos").single()
+    const { data } = await supabase
+        .from("salas")
+        .select("nombre, votos")
+        .eq("id", roomId)
+        .single()
     const currentVotes = data?.votos || []
 
     // Guardar el nuevo voto
     const updatedVotes = [...currentVotes, vote]
-    await supabase.from("salas").update({ votos: updatedVotes }).eq("id", data?.id)
+    await supabase.from("salas").update({ votos: updatedVotes }).eq("id", roomId)
 
-    setVotes(updatedVotes) // Guardamos los votos en el estado
+    // setVotes(updatedVotes) // Guardamos los votos en el estado
     if (showResults){ 
       console.log("showResults", showResults)
       onVoteComplete(updatedVotes)

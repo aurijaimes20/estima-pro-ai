@@ -7,9 +7,10 @@ import VoteResults from "@/components/VoteResults"
 import { Button } from "@/components/ui/button"
 import InviteModal from "@/components/InviteModal"
 import { supabase } from "@/lib/supabaseClient"
+import { CloudCog } from "lucide-react"
 
 export default function Sala() {
-  const { id } = useParams()
+  const { id } = useParams() as { id: string }
   const [votingComplete, setVotingComplete] = useState(false)
   const [votes, setVotes] = useState<number[]>([])
   const [userName, setUserName] = useState("")
@@ -58,8 +59,6 @@ export default function Sala() {
   const handleVoteComplete = async (newVotes: (number | string)[]) => {
     setVotes(newVotes.map(vote => typeof vote === "string" ? parseFloat(vote) : vote))
     setVotingComplete(true)
-
-    await supabase.from("salas").update({ votos: newVotes }).eq("id", id)
   }
 
   const handleResetVoting = async () => {
@@ -85,7 +84,7 @@ export default function Sala() {
       </button>
 
       {!votingComplete ? (
-        <VotingSystem onVoteComplete={handleVoteComplete} />
+        <VotingSystem onVoteComplete={handleVoteComplete} roomId={id} votes={votes}/>
       ) : (
         <div className="flex flex-col items-center">
           {/* Contenedor con scroll horizontal si hay muchos votos */}
