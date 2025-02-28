@@ -1,21 +1,34 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
-export default function Unirse() {
+export default function UnirsePage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <Unirse />
+    </Suspense>
+  )
+}
+
+function Unirse() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [roomId, setRoomId] = useState("")
   const [nickname, setNickname] = useState("")
 
   useEffect(() => {
-    const idFromUrl = searchParams.get("id")
-    if (idFromUrl) setRoomId(idFromUrl)
+    if (searchParams) {
+      const idFromUrl = searchParams.get("id")
+      if (idFromUrl) setRoomId(idFromUrl)
+    }
   }, [searchParams])
 
   const handleJoin = () => {
-    if (!roomId || !nickname) return alert("Debes ingresar un nombre y un ID de sala")
+    if (!roomId || !nickname) {
+      alert("Debes ingresar un nombre y un ID de sala")
+      return
+    }
     localStorage.setItem("userName", nickname)
     router.push(`/sala/${roomId}`)
   }
