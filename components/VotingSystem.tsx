@@ -57,6 +57,10 @@ export default function VotingSystem({ onVoteComplete, roomId, userName, votes }
     }
   }
 
+  // Calcular puntuación recomendada (promedio de los votos numéricos)
+  const numericVotes = votes.map((v) => (typeof v.voto === "number" ? v.voto : null)).filter((v) => v !== null) as number[]
+  const recommendedScore = numericVotes.length > 0 ? (numericVotes.reduce((a, b) => a + b, 0) / numericVotes.length).toFixed(1) : "N/A"
+
   return (
     <div className="flex flex-col items-center space-y-6">
       <div className="grid grid-cols-5 gap-4">
@@ -76,11 +80,11 @@ export default function VotingSystem({ onVoteComplete, roomId, userName, votes }
       </div>
 
       {votes.length > 0 && (
-        <Button className="mt-4" onClick={() => setShowResults(!showResults)}>
-          {showResults ? <EyeOff size={18} className="mr-2" /> : <Eye size={18} className="mr-2" />}
-          {showResults ? "Ocultar Votos" : "Revelar Votos"}
-        </Button>
-      )}
+  <Button className="mt-4 text-2xl py-3 px-6" onClick={() => setShowResults(!showResults)}>
+    {showResults ? <EyeOff size={24} className="mr-2" /> : <Eye size={24} className="mr-2" />}
+    {showResults ? "Ocultar Votos" : "Revelar Votos"}
+  </Button>
+)}
 
       {showResults && (
         <motion.div
@@ -101,13 +105,21 @@ export default function VotingSystem({ onVoteComplete, roomId, userName, votes }
               </motion.div>
             ))}
           </div>
-          <Button
-          className="mt-4"
-          onClick={() => onVoteComplete(votes)}
+          <Button className="mt-4 text-2xl py-3 px-6" onClick={() => onVoteComplete(votes)}>
+  <Eye size={24} className="mr-2" />
+  Ver todos los Votos
+</Button>
+        </motion.div>
+      )}
+
+      {showResults && votes.length > 0 && (
+        <motion.div
+          className="mt-4 p-4 bg-green-200 rounded-lg shadow-md"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
         >
-          <Eye size={18} className="mr-2" />
-          "Ver todos los Votos"
-        </Button>
+          <h2 className="text-lg font-semibold">Puntuación Recomendada:</h2>
+          <p className="text-2xl font-bold">{recommendedScore}</p>
         </motion.div>
       )}
     </div>
