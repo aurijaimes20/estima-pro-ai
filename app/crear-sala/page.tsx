@@ -8,11 +8,17 @@ import { v4 as uuidv4 } from "uuid"
 
 export default function CrearSala() {
   const [nombreSala, setNombreSala] = useState("")
+  const [nickname, setNickname] = useState("")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   const crearSala = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!nickname) {
+      alert("Debes ingresar un nickname")
+      return
+    }
+
     setLoading(true)
 
     const salaId = uuidv4() // Generar un ID único
@@ -28,14 +34,17 @@ export default function CrearSala() {
       return
     }
 
-    router.push(`/sala/${salaId}`) // Redirigir a la sala creada
+    // Guardar nickname en localStorage
+    localStorage.setItem("userName", nickname)
+
+    // Redirigir a la sala creada
+    router.push(`/sala/${salaId}`)
   }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-24">
       <h1 className="text-4xl font-bold mb-8 text-white">Crear Nueva Sala</h1>
   
-      {/* Caja blanca alrededor del formulario */}
       <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-xs">
         <form onSubmit={crearSala} className="flex flex-col">
           <input
@@ -44,6 +53,14 @@ export default function CrearSala() {
             onChange={(e) => setNombreSala(e.target.value)}
             placeholder="Nombre de la sala"
             className="border rounded w-full py-3 px-4 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+          <input
+            type="text"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            placeholder="Tu nombre o nickname"
+            className="border rounded w-full py-3 px-4 text-gray-700 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 mt-4"
             required
           />
           <button 
